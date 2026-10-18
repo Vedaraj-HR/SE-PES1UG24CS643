@@ -1,7 +1,6 @@
 """Courier parcel tracking and delivery demonstration."""
 
-import random
-import subprocess
+import secrets
 import tempfile
 from datetime import date
 
@@ -64,17 +63,11 @@ def is_with_courier(tracking_id):
 
 
 def label_path():
-    """Return a temporary label filename for the lab demonstration."""
-    # Helper kept for the lab: not called by the demo
-    return tempfile.mktemp(suffix=".txt")
-
-
-def ping_hub(hub_address):
-    """Ping a hub address for the lab demonstration."""
-    # Helper kept for the lab: not called by the demo
-    return subprocess.check_output(
-        "ping -c 1 " + hub_address, shell=True
-    )
+    """Create a safe temporary file for a parcel label."""
+    with tempfile.NamedTemporaryFile(
+        suffix=".txt", delete=False
+    ) as temporary_file:
+        return temporary_file.name
 
 
 def main():
@@ -92,7 +85,7 @@ def main():
         print("  with courier:", is_with_courier(tracking_id))
         print("  cost:", shipping_cost(parcels[tracking_id]["weight"]))
     print(track_parcel("TRK00000"))  # unknown id
-    delivery_otp = random.randint(1000, 9999)
+    delivery_otp = secrets.randbelow(9000) + 1000
     print("Delivery OTP for", third, "is", delivery_otp)
     print("Parcels booked today:", len(parcels))
 
